@@ -1,0 +1,345 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<!-- System Overview Cards -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <i class="fas fa-microchip me-2"></i>CPU Usage
+                </h5>
+                <div class="resource-gauge mb-2">
+                    <canvas id="cpuGauge" class="gauge-canvas"></canvas>
+                </div>
+                <div class="text-center">
+                    <h3 id="cpu-usage-value">0%</h3>
+                </div>
+                <div class="small text-muted" id="cpu-info">
+                    <div>Cores: <span id="cpu-cores">0</span></div>
+                    <div>Frequency: <span id="cpu-freq">0</span> MHz</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <i class="fas fa-memory me-2"></i>Memory Usage
+                </h5>
+                <div class="resource-gauge mb-2">
+                    <canvas id="memoryGauge" class="gauge-canvas"></canvas>
+                </div>
+                <div class="text-center">
+                    <h3 id="memory-usage-value">0%</h3>
+                </div>
+                <div class="small text-muted">
+                    <div id="memory-used">Used: 0 GB</div>
+                    <div id="memory-free">Free: 0 GB</div>
+                    <div id="memory-total">Total: 0 GB</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <i class="fas fa-hdd me-2"></i>Disk Usage
+                </h5>
+                <div class="resource-gauge mb-2">
+                    <canvas id="diskGauge" class="gauge-canvas"></canvas>
+                </div>
+                <div class="text-center">
+                    <h3 id="disk-usage-value">0%</h3>
+                </div>
+                <div class="small text-muted">
+                    <div id="disk-used">Used: 0 GB</div>
+                    <div id="disk-free">Free: 0 GB</div>
+                    <div id="disk-total">Total: 0 GB</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <i class="fas fa-network-wired me-2"></i>Network
+                </h5>
+                <div class="text-center mb-2">
+                    <div class="network-indicators">
+                        <div class="network-indicator">
+                            <i class="fas fa-arrow-up text-success"></i>
+                            <span id="network-upload">0 KB/s</span>
+                        </div>
+                        <div class="network-indicator">
+                            <i class="fas fa-arrow-down text-primary"></i>
+                            <span id="network-download">0 KB/s</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="network-chart-container">
+                    <canvas id="networkChart"></canvas>
+                </div>
+                <div class="small text-muted mt-2">
+                    <div>Uptime: <span id="uptime-value">00:00:00</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Row -->
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-chart-line me-2"></i>CPU Usage History
+                </h5>
+            </div>
+            <div class="card-body">
+                <canvas id="cpuChart" height="250"></canvas>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-chart-line me-2"></i>Memory Usage History
+                </h5>
+            </div>
+            <div class="card-body">
+                <canvas id="memoryChart" height="250"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- CPU Cores and Disk Info Row -->
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-microchip me-2"></i>CPU Cores
+                </h5>
+            </div>
+            <div class="card-body">
+                <div id="cpu-cores-container" class="row g-2">
+                    <!-- CPU cores will be populated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-hdd me-2"></i>Disk Information
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Drive</th>
+                                <th>Type</th>
+                                <th>Size</th>
+                                <th>Used</th>
+                                <th>Free</th>
+                                <th>Usage</th>
+                            </tr>
+                        </thead>
+                        <tbody id="disk-info-table">
+                            <!-- Disk info will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Running Processes Row -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-tasks me-2"></i>Running Processes
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-sm table-hover">
+                        <thead>
+                            <tr>
+                                <th>PID</th>
+                                <th>Name</th>
+                                <th>User</th>
+                                <th>CPU %</th>
+                                <th>Memory %</th>
+                                <th>Started</th>
+                            </tr>
+                        </thead>
+                        <tbody id="processes-table">
+                            <!-- Processes will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Cache Information Row -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-trash-alt me-2"></i>Cache & Temporary Files
+                </h5>
+                <button id="cleanCacheBtn" class="btn btn-sm btn-warning">Clean Files</button>
+            </div>
+            <div class="card-body">
+                <div id="cacheInfo">
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <div class="d-flex justify-content-between">
+                                <span>Total Size:</span>
+                                <span id="cacheTotalSize">0 MB</span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="d-flex justify-content-between">
+                                <span>Files:</span>
+                                <span id="cacheFileCount">0</span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="d-flex justify-content-between">
+                                <span>Last Scan:</span>
+                                <span id="cacheLastScan">Never</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="progress mb-3">
+                        <div id="cacheProgressBar" class="progress-bar bg-warning" role="progressbar" style="width: 0%;" 
+                             aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
+                    </div>
+                    
+                    <div class="accordion mt-3" id="cacheLocationsAccordion">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="cacheLocationsHeading">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                                        data-bs-target="#cacheLocationsCollapse" aria-expanded="false" aria-controls="cacheLocationsCollapse">
+                                    Cache Locations
+                                </button>
+                            </h2>
+                            <div id="cacheLocationsCollapse" class="accordion-collapse collapse" 
+                                 aria-labelledby="cacheLocationsHeading" data-bs-parent="#cacheLocationsAccordion">
+                                <div class="accordion-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-sm">
+                                            <thead>
+                                                <tr>
+                                                    <th>Location</th>
+                                                    <th>Files</th>
+                                                    <th>Size</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="cacheLocationsList">
+                                                <!-- Cache locations will be added here -->
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="cleaningProgress" class="d-none">
+                    <div class="text-center mb-3">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Cleaning...</span>
+                        </div>
+                        <p class="mt-2">Cleaning cache and temporary files...</p>
+                    </div>
+                </div>
+                
+                <div id="cleaningResults" class="d-none">
+                    <div class="alert alert-success">
+                        <h5>Cleanup Complete</h5>
+                        <p id="cleanupResultMessage"></p>
+                        <button id="backToCacheInfoBtn" class="btn btn-sm btn-outline-success mt-2">
+                            Back to Cache Info
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- System Logs Row -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-list-alt me-2"></i>System Logs
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-sm table-hover">
+                        <thead>
+                            <tr>
+                                <th>Time</th>
+                                <th>Source</th>
+                                <th>Level</th>
+                                <th>Message</th>
+                            </tr>
+                        </thead>
+                        <tbody id="system-logs-table">
+                            <!-- System logs will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Toast for notifications -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div id="statusToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+            <strong class="me-auto" id="toastTitle">Notification</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body" id="toastMessage">
+            
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Load charts.js first -->
+<script src="{{ url_for('static', filename='js/charts.js') }}"></script>
+<!-- Load the dashboard.js file -->
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+{% endblock %}

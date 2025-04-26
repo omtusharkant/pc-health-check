@@ -1,0 +1,392 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        <div class="card mb-4">
+            <div class="card-header bg-primary">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-bell me-2"></i>Alert Settings
+                </h5>
+            </div>
+            <div class="card-body">
+                <form id="alert-settings-form">
+                    <div class="form-check form-switch mb-3">
+                        <input class="form-check-input" type="checkbox" id="alerts-enabled" 
+                               {% if alert_settings.alerts_enabled %}checked{% endif %}>
+                        <label class="form-check-label" for="alerts-enabled">Enable Alerts</label>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <label for="cpu-threshold" class="form-label">CPU Threshold (%)</label>
+                            <div class="input-group">
+                                <input type="number" class="form-control" id="cpu-threshold" 
+                                       min="0" max="100" step="1" value="{{ alert_settings.cpu_threshold }}">
+                                <span class="input-group-text">%</span>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <label for="memory-threshold" class="form-label">Memory Threshold (%)</label>
+                            <div class="input-group">
+                                <input type="number" class="form-control" id="memory-threshold" 
+                                       min="0" max="100" step="1" value="{{ alert_settings.memory_threshold }}">
+                                <span class="input-group-text">%</span>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <label for="disk-threshold" class="form-label">Disk Threshold (%)</label>
+                            <div class="input-group">
+                                <input type="number" class="form-control" id="disk-threshold" 
+                                       min="0" max="100" step="1" value="{{ alert_settings.disk_threshold }}">
+                                <span class="input-group-text">%</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="email-alerts" 
+                                       {% if alert_settings.email_alerts %}checked{% endif %}>
+                                <label class="form-check-label" for="email-alerts">Email Alerts</label>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="discord-alerts" 
+                                       {% if alert_settings.discord_alerts %}checked{% endif %}>
+                                <label class="form-check-label" for="discord-alerts">Discord Alerts</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="text-end">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-1"></i>Save Alert Settings
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <div class="card mb-4">
+            <div class="card-header bg-info">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-envelope me-2"></i>Email Configuration
+                </h5>
+            </div>
+            <div class="card-body">
+                <form id="email-config-form">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="email-from" class="form-label">From Email</label>
+                            <input type="email" class="form-control" id="email-from" 
+                                   placeholder="your-email@example.com" value="{{ email_config.email_from }}">
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="email-to" class="form-label">To Email</label>
+                            <input type="email" class="form-control" id="email-to" 
+                                   placeholder="recipient@example.com" value="{{ email_config.email_to }}">
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="smtp-server" class="form-label">SMTP Server</label>
+                            <input type="text" class="form-control" id="smtp-server" 
+                                   placeholder="smtp.gmail.com" value="{{ email_config.smtp_server }}">
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="smtp-port" class="form-label">SMTP Port</label>
+                            <input type="number" class="form-control" id="smtp-port" 
+                                   placeholder="587" value="{{ email_config.smtp_port }}">
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="smtp-username" class="form-label">SMTP Username</label>
+                            <input type="text" class="form-control" id="smtp-username" 
+                                   placeholder="your-email@example.com" value="{{ email_config.smtp_username }}">
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="smtp-password" class="form-label">SMTP Password</label>
+                            <input type="password" class="form-control" id="smtp-password" 
+                                   placeholder="password" value="{{ email_config.smtp_password }}">
+                        </div>
+                    </div>
+                    
+                    <div class="text-end">
+                        <button type="button" id="test-email-button" class="btn btn-secondary me-2">
+                            <i class="fas fa-paper-plane me-1"></i>Test Email
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-1"></i>Save Email Config
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <div class="card mb-4">
+            <div class="card-header bg-secondary">
+                <h5 class="card-title mb-0">
+                    <i class="fab fa-discord me-2"></i>Discord Webhook
+                </h5>
+            </div>
+            <div class="card-body">
+                <form id="discord-config-form">
+                    <div class="mb-3">
+                        <label for="discord-webhook" class="form-label">Webhook URL</label>
+                        <input type="url" class="form-control" id="discord-webhook" 
+                               placeholder="https://discord.com/api/webhooks/..." value="{{ discord_config.webhook_url }}">
+                    </div>
+                    
+                    <div class="text-end">
+                        <button type="button" id="test-discord-button" class="btn btn-secondary me-2">
+                            <i class="fas fa-paper-plane me-1"></i>Test Discord Webhook
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-1"></i>Save Discord Config
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Success Alert Modal -->
+<div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title" id="successModalLabel">Success</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="successModalBody">
+                Settings saved successfully!
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Error Alert Modal -->
+<div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="errorModalLabel">Error</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="errorModalBody">
+                An error occurred while saving settings.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Alert settings form
+    const alertSettingsForm = document.getElementById('alert-settings-form');
+    const alertsEnabled = document.getElementById('alerts-enabled');
+    const cpuThreshold = document.getElementById('cpu-threshold');
+    const memoryThreshold = document.getElementById('memory-threshold');
+    const diskThreshold = document.getElementById('disk-threshold');
+    const emailAlerts = document.getElementById('email-alerts');
+    const discordAlerts = document.getElementById('discord-alerts');
+    
+    // Email config form
+    const emailConfigForm = document.getElementById('email-config-form');
+    const emailFrom = document.getElementById('email-from');
+    const emailTo = document.getElementById('email-to');
+    const smtpServer = document.getElementById('smtp-server');
+    const smtpPort = document.getElementById('smtp-port');
+    const smtpUsername = document.getElementById('smtp-username');
+    const smtpPassword = document.getElementById('smtp-password');
+    const testEmailButton = document.getElementById('test-email-button');
+    
+    // Discord config form
+    const discordConfigForm = document.getElementById('discord-config-form');
+    const discordWebhook = document.getElementById('discord-webhook');
+    const testDiscordButton = document.getElementById('test-discord-button');
+    
+    // Modals
+    const successModal = new bootstrap.Modal(document.getElementById('successModal'));
+    const errorModal = new bootstrap.Modal(document.getElementById('errorModal'));
+    const successModalBody = document.getElementById('successModalBody');
+    const errorModalBody = document.getElementById('errorModalBody');
+    
+    // Alert settings form submission
+    alertSettingsForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const settings = {
+            alerts_enabled: alertsEnabled.checked,
+            cpu_threshold: parseFloat(cpuThreshold.value),
+            memory_threshold: parseFloat(memoryThreshold.value),
+            disk_threshold: parseFloat(diskThreshold.value),
+            email_alerts: emailAlerts.checked,
+            discord_alerts: discordAlerts.checked
+        };
+        
+        fetch('/api/settings', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(settings)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                successModalBody.textContent = 'Alert settings saved successfully!';
+                successModal.show();
+            } else {
+                errorModalBody.textContent = data.message || 'Failed to save alert settings.';
+                errorModal.show();
+            }
+        })
+        .catch(error => {
+            errorModalBody.textContent = 'An error occurred while saving alert settings: ' + error.message;
+            errorModal.show();
+        });
+    });
+    
+    // Email config form submission
+    emailConfigForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const emailConfig = {
+            email_config: {
+                email_from: emailFrom.value,
+                email_to: emailTo.value,
+                smtp_server: smtpServer.value,
+                smtp_port: parseInt(smtpPort.value),
+                smtp_username: smtpUsername.value,
+                smtp_password: smtpPassword.value
+            }
+        };
+        
+        fetch('/api/settings', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(emailConfig)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                successModalBody.textContent = 'Email configuration saved successfully!';
+                successModal.show();
+            } else {
+                errorModalBody.textContent = data.message || 'Failed to save email configuration.';
+                errorModal.show();
+            }
+        })
+        .catch(error => {
+            errorModalBody.textContent = 'An error occurred while saving email configuration: ' + error.message;
+            errorModal.show();
+        });
+    });
+    
+    // Discord config form submission
+    discordConfigForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const discordConfig = {
+            discord_webhook: discordWebhook.value
+        };
+        
+        fetch('/api/settings', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(discordConfig)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                successModalBody.textContent = 'Discord webhook saved successfully!';
+                successModal.show();
+            } else {
+                errorModalBody.textContent = data.message || 'Failed to save Discord webhook.';
+                errorModal.show();
+            }
+        })
+        .catch(error => {
+            errorModalBody.textContent = 'An error occurred while saving Discord webhook: ' + error.message;
+            errorModal.show();
+        });
+    });
+    
+    // Test email button
+    testEmailButton.addEventListener('click', function() {
+        fetch('/api/test_alert', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ type: 'email' })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                successModalBody.textContent = data.message || 'Test email sent successfully!';
+                successModal.show();
+            } else {
+                errorModalBody.textContent = data.message || 'Failed to send test email.';
+                errorModal.show();
+            }
+        })
+        .catch(error => {
+            errorModalBody.textContent = 'An error occurred while sending test email: ' + error.message;
+            errorModal.show();
+        });
+    });
+    
+    // Test Discord button
+    testDiscordButton.addEventListener('click', function() {
+        fetch('/api/test_alert', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ type: 'discord' })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                successModalBody.textContent = data.message || 'Test Discord notification sent successfully!';
+                successModal.show();
+            } else {
+                errorModalBody.textContent = data.message || 'Failed to send test Discord notification.';
+                errorModal.show();
+            }
+        })
+        .catch(error => {
+            errorModalBody.textContent = 'An error occurred while sending test Discord notification: ' + error.message;
+            errorModal.show();
+        });
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,109 @@
+/* Dashboard Card Styles */
+.card {
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 1.5rem;
+}
+
+.card-header {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    border-top-left-radius: 10px !important;
+    border-top-right-radius: 10px !important;
+}
+
+.card-body {
+    padding: 1.25rem;
+}
+
+/* Resource Gauge Styles */
+.resource-gauge {
+    position: relative;
+    height: 120px;
+    margin: 0 auto;
+}
+
+.gauge-canvas {
+    max-width: 100%;
+}
+
+/* Network Indicators */
+.network-indicators {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 1rem;
+}
+
+.network-indicator {
+    text-align: center;
+}
+
+.network-chart-container {
+    height: 120px;
+    position: relative;
+}
+
+/* CPU Cores Display */
+.cpu-core-item {
+    margin-bottom: 10px;
+}
+
+/* System Time and Uptime Display */
+.system-time, .uptime-display {
+    display: inline-block;
+    color: #ffffff;
+    font-weight: 500;
+    font-family: monospace;
+    font-size: 0.9rem;
+}
+
+.uptime-display {
+    background-color: rgba(75, 192, 192, 0.2);
+    border-radius: 4px;
+    padding: 2px 8px;
+}
+
+/* Footer Styles */
+.footer {
+    margin-top: 2rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding-top: 1rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .resource-gauge {
+        height: 100px;
+    }
+    
+    .network-chart-container {
+        height: 100px;
+    }
+    
+    .card-title {
+        font-size: 1rem;
+    }
+    
+    .system-time, .uptime-display {
+        font-size: 0.8rem;
+    }
+}
+
+/* Table rows hover effect */
+.table-hover tbody tr:hover {
+    background-color: rgba(75, 192, 192, 0.1);
+}
+
+/* Progress bar adjustments */
+.progress {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Settings page styles */
+.form-label {
+    font-weight: 500;
+}
+
+.form-check-input:checked {
+    background-color: var(--bs-primary);
+    border-color: var(--bs-primary);
+}
